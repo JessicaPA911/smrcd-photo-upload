@@ -48,14 +48,15 @@ export async function ensureSignedIn(state: string, loginHint?: string): Promise
   return undefined;
 }
 
-export async function getSharePointToken(): Promise<string> {
+export async function getSharePointToken(allowRedirect = false): Promise<string> {
   const account: AccountInfo | null = msal.getActiveAccount();
   if (!account) { throw new Error('Not signed in.'); }
   try {
     return (await msal.acquireTokenSilent({ scopes, account })).accessToken;
   } catch (e) {
     if (e instanceof InteractionRequiredAuthError) {
-      await msal.acquireTokenRedirect({ scopes, account });
+      if (allowRedirect) { await msal.acquireTokenRedirect({ scopes, account }); }
+      throw new Error('Your sign-in needs to be refreshed. Uploaded photos stay in SharePoint; switch accounts to sign in again. This discards unsaved page selections.');
     }
     throw e;
   }
