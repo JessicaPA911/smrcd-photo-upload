@@ -45,3 +45,33 @@ h2 { font-size: 19px; margin: 0 0 12px; }
 .photoCard strong { display: block; margin: 8px 0; }
 button:disabled { opacity: .45; cursor: not-allowed; }
 button:focus-visible, input:focus-visible { outline: 3px solid #005a9e; outline-offset: 3px; }
+.tagPreview { max-width: 1140px; padding: 24px; }
+.previewHeader { border-bottom: 1px solid #e1e7ee; padding-bottom: 16px; margin-bottom: 20px; }
+.previewHeader h1 { margin: 8px 0; font-size: clamp(26px, 4vw, 36px); color: #17324d; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; font-weight: 700; color: #526579; }
+.previewNotice { background: #eff6fc; border-left: 4px solid #0078d4; padding: 14px; border-radius: 6px; line-height: 1.5; margin-bottom: 24px; }
+.previewLayout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; align-items: start; }
+.previewContent { min-width: 0; }
+.tagSearch { display: block; width: 100%; padding: 12px; min-height: 48px; border: 1px solid #acbbc9; border-radius: 6px; font: inherit; margin-top: 8px; }
+.categoryGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.categoryCard { border: 1px solid #d9e2eb; border-radius: 10px; padding: 12px; min-width: 0; margin: 0; background: #fff; }
+.categoryCard legend { font-size: 17px; font-weight: 650; color: #17324d; padding: 0 6px; }
+.categoryCount { font-size: 12px; background: #eaf1f8; border-radius: 20px; padding: 3px 8px; margin-left: 8px; }
+.tagChoice { display: flex; gap: 10px; align-items: center; min-height: 48px; padding: 10px; border-radius: 6px; margin: 4px 0; cursor: pointer; border: 1px solid transparent; }
+.tagChoice:hover { background: #f4f7fa; }
+.tagChoice.isSelected { background: #e6f2ff; border-color: #0078d4; }
+.tagChoice input { width: 20px; height: 20px; flex-shrink: 0; accent-color: #0078d4; }
+.tagChoiceText { min-width: 0; overflow-wrap: anywhere; }
+.tagChoiceText small { display: block; color: #526579; margin-top: 4px; }
+.selectionSummary { position: sticky; top: 20px; background: #f6f8fb; border: 1px solid #d9e2eb; border-radius: 10px; padding: 18px; overflow-wrap: anywhere; }
+.selectionSummary p { color: #526579; line-height: 1.5; }
+.selectedTagList { list-style: none; padding: 0; }
+.selectedTag { display: block; width: 100%; border: 1px solid #9ac4ea; border-radius: 6px; background: #e6f2ff; padding: 10px; margin-bottom: 8px; text-align: left; font: inherit; color: #17324d; cursor: pointer; }
+.selectedTag small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #526579; margin-bottom: 4px; }
+.selectedTag span { font-weight: 600; }
+@media (max-width: 760px) {
+  .tagPreview { padding: 16px; }
+  .previewLayout { grid-template-columns: 1fr; }
+  .selectionSummary { position: static; }
+}
+@media (max-width: 480px) { .categoryGrid { grid-template-columns: 1fr; } }

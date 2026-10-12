@@ -2,6 +2,20 @@
 
 Live page: https://jessicapa911.github.io/smrcd-photo-upload/
 
+## New tag-list design preview
+
+Open https://jessicapa911.github.io/smrcd-photo-upload/?previewTags=1 to preview
+**Photo Management Tags (2)**. Sign-in and read access to the list are required.
+The page reads active items at runtime using the verified internal fields:
+`Title` (category), `field_1` (tag), `field_2` (description), and `field_3` (Active).
+Tag-list contents are not bundled into the public GitHub repository.
+
+The preview groups choices by category, supports search and multiple selections,
+and shows selected category/tag pairs. It performs no uploads, metadata writes,
+or canvas navigation. Selections disappear on reload. The existing uploader below
+continues using its original Tags list and lookup fields; no new-list integration
+or migration has been applied.
+
 A static page launched by a Power Apps canvas app. Users sign in, browse folders in
 the configured SharePoint Documents library, choose an upload destination, and
 multi-select photos from their devices. Every uploaded photo receives `BatchID`.

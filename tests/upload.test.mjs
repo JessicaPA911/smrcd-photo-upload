@@ -62,6 +62,25 @@ test('pagination cannot send bearer tokens to another site', async () => {
   globalThis.fetch = async () => json({ value: [], 'odata.nextLink': 'https://example.com/_api/items' });
   await assert.rejects(service().listFolders(folder), /outside the configured site/);
 });
+test('preview reads active tags with their verified internal names and never reads photo fields', async () => {
+  const requests = [];
+  globalThis.fetch = async (url, init) => {
+    requests.push({ url, method: init.method ?? 'GET' });
+    return json({ value: [
+      { Id: 1, Title: 'Location', field_1: ' Coast ', field_2: 'Sample description', field_3: true },
+      { Id: 2, Title: 'People', field_1: 'Staff', field_3: true },
+      { Id: 3, Title: 'Subject', field_1: 'Hidden', field_3: false }
+    ] });
+  };
+  assert.deepEqual(await service().loadPreviewTags(), [
+    { Id: 1, TagType: 'Location', Tag: 'Coast', description: 'Sample description' },
+    { Id: 2, TagType: 'People', Tag: 'Staff', description: '' }
+  ]);
+  assert.equal(requests.length, 1);
+  assert.equal(requests[0].method, 'GET');
+  assert.ok(requests[0].url.includes(config.previewTagsListId));
+  assert.ok(!requests[0].url.includes(config.libraryId));
+});
 test('root-folder preflight checks BatchID on the library, not root ListItemAllFields', async () => {
   const urls = [];
   globalThis.fetch = async url => {

@@ -5,7 +5,7 @@ import { SharePointService, type Folder, type IPreflightResult, type IUploadResu
 import { appendParams, createBatchId, isAllowedReturnUrl, isImageFile, sanitizeBatchId } from './uploadUtils';
 import type { Tag } from './tagging';
 
-interface LaunchContext { returnUrl?: string; batchId?: string; upn?: string }
+interface LaunchContext { returnUrl?: string; batchId?: string; upn?: string; previewTags?: boolean }
 interface Photo {
   file: File;
   preview: string;
@@ -68,9 +68,10 @@ function dirty(photo: Photo): boolean {
 function readContext(): LaunchContext {
   const query = new URLSearchParams(location.search);
   const stored: LaunchContext = JSON.parse(sessionStorage.getItem(CONTEXT_KEY) || '{}');
-  const ctx = query.has('returnUrl') || query.has('batchId') || query.has('upn') ? {
+  const ctx = query.has('returnUrl') || query.has('batchId') || query.has('upn') || query.has('previewTags') ? {
     returnUrl: query.get('returnUrl') ?? undefined,
-    batchId: query.get('batchId') ?? undefined, upn: query.get('upn') ?? undefined
+    batchId: query.get('batchId') ?? undefined, upn: query.get('upn') ?? undefined,
+    previewTags: query.get('previewTags') === '1'
   } : stored;
   sessionStorage.setItem(CONTEXT_KEY, JSON.stringify(ctx));
   return ctx;
@@ -83,6 +84,14 @@ async function start(): Promise<void> {
   if (auth.state) { ctx = { ...JSON.parse(auth.state), ...ctx }; }
   history.replaceState(undefined, '', location.pathname);
   userName = auth.account.name || auth.account.username;
+  if (ctx.previewTags) {
+    history.replaceState(undefined, '', `${location.pathname}?previewTags=1`);
+    await getSharePointToken(true);
+    const { showTagPreview } = await import('./tagPreview');
+    await showTagPreview(root, service, userName);
+    sessionStorage.removeItem(CONTEXT_KEY);
+    return;
+  }
   batchId = sanitizeBatchId(ctx.batchId) || createBatchId();
   sessionStorage.setItem(CONTEXT_KEY, JSON.stringify({ ...ctx, batchId }));
   returnUrl = ctx.returnUrl && isAllowedReturnUrl(ctx.returnUrl, config.defaultReturnUrl)

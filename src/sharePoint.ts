@@ -7,6 +7,10 @@ export interface Folder {
   ServerRelativeUrl: string;
 }
 
+export interface PreviewTag extends Tag {
+  description: string;
+}
+
 interface Page<T> {
   value: T[];
   'odata.nextLink'?: string;
@@ -135,6 +139,7 @@ export class SharePointService {
           field.LookupList?.replace(/[{}]/g, '').toLowerCase() !== config.tagsListId.toLowerCase()) {
         throw new Error(`Tagging requires the ${name} multi-lookup field linked to the Tags list.`);
       }
+
     }
     const tags = await this._pages<Tag>(
       `/_api/web/lists(guid'${config.tagsListId}')/items?$select=Id,Tag,TagType&$top=200`);
@@ -142,6 +147,24 @@ export class SharePointService {
       throw new Error('The Tags list contains a missing tag name or category. Correct it before adding tags.');
     }
     return tags.sort((a, b) => a.TagType.localeCompare(b.TagType) || a.Tag.localeCompare(b.Tag));
+  }
+
+  public async loadPreviewTags(): Promise<PreviewTag[]> {
+    const rows = await this._pages<{
+      Id: number; Title: string; field_1: string; field_2?: string | null; field_3: boolean;
+    }>(
+      `/_api/web/lists(guid'${config.previewTagsListId}')/items` +
+      '?$select=Id,Title,field_1,field_2,field_3&$filter=field_3 eq 1&$top=200');
+    const active = rows.filter(row => row.field_3 === true);
+    if (active.some(row => !Number.isInteger(row.Id) ||
+        typeof row.Title !== 'string' || !row.Title.trim() ||
+        typeof row.field_1 !== 'string' || !row.field_1.trim())) {
+      throw new Error('An active tag is missing its category or tag name. Correct the tag list and retry.');
+    }
+    return active.map(row => ({
+      Id: row.Id, TagType: row.Title.trim(), Tag: row.field_1.trim(),
+      description: row.field_2?.trim() || ''
+    })).sort((a, b) => a.TagType.localeCompare(b.TagType) || a.Tag.localeCompare(b.Tag));
   }
 
   public async addTags(fileUrl: string, tags: readonly Tag[]): Promise<void> {

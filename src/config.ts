@@ -8,6 +8,7 @@ export const config = {
   libraryPath: 'Shared Documents',
   libraryId: '0478e812-5fda-400a-aeed-a34bc815fe26',
   tagsListId: '431acb4f-c6f5-4479-8f98-558da4c6cf8d',
+  previewTagsListId: 'e5873870-d3fc-4ab8-96b4-e3d19a51f63e',
   /** Required on every upload, including uploads without user-selected tags. */
   batchFieldName: 'BatchID',
   /** Used when the canvas app doesn't pass ?returnUrl= */
